@@ -1,15 +1,14 @@
-# give Python access to Blender's functionality
 import bpy
 import re
 import time
 
 bl_info = {
     "name": "Tarkov Toolkit",
-    "version": (0, 0, 1),
+    "version": (1, 0, 0),
     "author": "mrsharkus12",
-    # "blender": (4, 3, 0),
+    "blender": (2, 93, 0),
     "location": "3D Viewport > Sidebar > Tarkov Toolkit",
-    "description": "Toolkit pack for a more comfortable Tarkov asset management.",
+    "description": "A toolkit pack for a more comfortable Tarkov asset management.",
     "category": "Development",
 }
 
@@ -532,7 +531,7 @@ class OBJECT_OT_CleanHumanBones(bpy.types.Operator):
 class OBJECT_OT_CleanEngineBones(bpy.types.Operator):
     bl_idname = "object.clean_engine_bones"
     bl_label = "Clean Weapon Engine Bones"
-    bl_description = ""
+    bl_description = "Removes engine's weapon pointers in a armature"
 
     bone_names = [
         "Bend_Goal_Left", 
