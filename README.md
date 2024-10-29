@@ -1,2 +1,2 @@
-# Tarkov_Toolkit
- A Blender toolkit for EFT assets
+# Tarkov Toolkit
+ TODO: DOCUMENT ALL FEATURES

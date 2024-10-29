@@ -12,6 +12,20 @@ bl_info = {
     "category": "Development",
 }
 
+ObjectAndBonePair = [
+    ("reciever", "mod_reciever"),
+    ("handguard", "mod_handguard"),
+    ("barrel", "mod_barrel"),
+    ("muzzle", "mod_muzzle"),
+    ("gas_block", "mod_gas_block"),
+    ("pistolgrip", "mod_pistol_grip"),
+    ("charge", "mod_charge"),
+    ("stock", "mod_stock"),
+    ("stock", "mod_stock_000"),
+    ("mag", "mod_magazine"),
+    ("launcher", "mod_launcher"),
+]
+
 class OBJECT_OT_LoadMagazines(bpy.types.Operator):
     bl_idname = "object.load_tarkov_magazines"
     bl_label = "Load Magazine"
@@ -30,6 +44,7 @@ class OBJECT_OT_LoadMagazines(bpy.types.Operator):
                         self.parentKeepTransform(obj, active_armature, bone_name)
 
             bpy.ops.object.mode_set(mode='OBJECT')
+            self.report({'INFO'}, f"Magazine '{active_armature.name}' loaded.")
             return {'FINISHED'}
         else:
             self.report({'WARNING'}, "No active armature selected.")
@@ -46,7 +61,6 @@ class OBJECT_OT_LoadMagazines(bpy.types.Operator):
                 armature_matrix = armature.matrix_world
                 bone_location = armature_matrix @ bone.head
                 obj.location = bone_location
-                self.report({'INFO'}, f"Moved {obj.name} to the location of {bone_name} in {armature.name}.")
             else:
                 self.report({'WARNING'}, f"Bone '{bone_name}' not found in armature '{armature.name}'.")
 
@@ -72,8 +86,6 @@ class OBJECT_OT_LoadMagazines(bpy.types.Operator):
             obj.parent_bone = bone_name
 
             obj.matrix_world = world_matrix
-
-            self.report({'INFO'}, f"Object '{obj.name}' has been parented to bone '{bone_name}' of armature '{armature.name}'.")
 
 class CleanLODMaterials(bpy.types.Operator):
     bl_idname = "object.remove_lod_materials"
@@ -550,7 +562,8 @@ class OBJECT_OT_CleanEngineBones(bpy.types.Operator):
         "Weapon_root_anim", 
         "aim_camera", 
         "mod_magazine_new",
-        "fireport"
+        "fireport",
+        "mod_aim_camera"
     ]
 
     def execute(self, context):
@@ -570,6 +583,64 @@ class OBJECT_OT_CleanEngineBones(bpy.types.Operator):
             return {'FINISHED'}
         else:
             self.report({'ERROR'}, "No active armature found.")
+            return {'CANCELLED'}
+
+class OBJECT_OT_AssemblyWeapon(bpy.types.Operator):
+    bl_idname = "object.assembly_weapon"
+    bl_label = "Assembly Attachments \ Weapon"
+    bl_description = "Attaches selected attachments to an active attachment \ weapon."
+
+    def move_obj_to_bone(self, obj, armature, bone_name):
+        if armature and obj:
+            bpy.context.view_layer.objects.active = armature
+            bpy.ops.object.mode_set(mode='POSE')
+
+            bone = armature.pose.bones.get(bone_name)
+            if bone:
+                armature_matrix = armature.matrix_world
+                bone_location = armature_matrix @ bone.head
+                obj.location = bone_location
+            else:
+                self.report({'WARNING'}, f"Bone '{bone_name}' not found in armature '{armature.name}'.")
+
+    def parent_keep_transform(self, obj, armature, bone_name):
+        if obj is None or armature is None:
+            print("Object or Armature not found.")
+            return
+
+        if armature.type == 'ARMATURE':
+            bpy.context.view_layer.objects.active = armature
+            bpy.ops.object.mode_set(mode='POSE')
+
+            bone = armature.data.bones.get(bone_name)
+            if bone is None:
+                print("Bone not found.")
+                return
+
+            world_matrix = obj.matrix_world.copy()
+
+            obj.parent = armature
+            obj.parent_type = 'BONE'
+            obj.parent_bone = bone_name
+
+            obj.matrix_world = world_matrix
+
+    def execute(self, context):
+        active_armature = context.active_object
+
+        if active_armature and active_armature.type == 'ARMATURE':
+            for obj in context.selected_objects:
+                if obj != active_armature:
+                    for object_name, bone_name in ObjectAndBonePair:
+                        if object_name in obj.name:
+                            self.move_obj_to_bone(obj, active_armature, bone_name)
+                            self.parent_keep_transform(obj, active_armature, bone_name)
+
+            bpy.ops.object.mode_set(mode='OBJECT')
+            self.report({'INFO'}, f"'{active_armature.name}' assembled.")
+            return {'FINISHED'}
+        else:
+            self.report({'WARNING'}, "No active armature selected.")
             return {'CANCELLED'}
 
 class TarkovTools_Shared(bpy.types.Panel):
@@ -598,6 +669,7 @@ class TarkovTools_Weapon(bpy.types.Panel):
         layout = self.layout
         
         layout.operator(OBJECT_OT_LoadMagazines.bl_idname, icon='OBJECT_DATA')
+        layout.operator(OBJECT_OT_AssemblyWeapon.bl_idname, icon='LINKED')
         layout.operator(OBJECT_OT_CleanHumanBones.bl_idname, icon='BONE_DATA')
         layout.operator(OBJECT_OT_CleanEngineBones.bl_idname, icon='BONE_DATA')
 
@@ -620,10 +692,11 @@ class TarkovTools_World(bpy.types.Panel):
 
 def register():
     bpy.utils.register_class(OBJECT_OT_LoadMagazines)
+    bpy.utils.register_class(OBJECT_OT_AssemblyWeapon)
     bpy.utils.register_class(OBJECT_OT_CleanHumanBones)
     bpy.utils.register_class(OBJECT_OT_CleanEngineBones)
-    bpy.utils.register_class(CleanLODMaterials)
 
+    bpy.utils.register_class(CleanLODMaterials)
     bpy.utils.register_class(OBJECT_OT_CleanLODMeshes)
     bpy.utils.register_class(OBJECT_OT_CleanShadowMeshes)
     bpy.utils.register_class(OBJECT_OT_CleanTriggerMeshes)
@@ -637,10 +710,11 @@ def register():
 
 def unregister():
     bpy.utils.unregister_class(OBJECT_OT_LoadMagazines)
+    bpy.utils.unregister_class(OBJECT_OT_AssemblyWeapon)
     bpy.utils.unregister_class(OBJECT_OT_CleanHumanBones)
     bpy.utils.unregister_class(OBJECT_OT_CleanEngineBones)
-    bpy.utils.unregister_class(CleanLODMaterials)
 
+    bpy.utils.unregister_class(CleanLODMaterials)
     bpy.utils.unregister_class(OBJECT_OT_CleanLODMeshes)
     bpy.utils.unregister_class(OBJECT_OT_CleanShadowMeshes)
     bpy.utils.unregister_class(OBJECT_OT_CleanTriggerMeshes)
