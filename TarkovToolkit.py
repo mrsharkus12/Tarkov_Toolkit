@@ -4,7 +4,7 @@ import time
 
 bl_info = {
     "name": "Tarkov Toolkit",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "author": "mrsharkus12",
     "blender": (2, 93, 0),
     "location": "3D Viewport > Sidebar > Tarkov Toolkit",
@@ -24,6 +24,38 @@ ObjectAndBonePair = [
     ("stock", "mod_stock_000"),
     ("mag", "mod_magazine"),
     ("launcher", "mod_launcher"),
+    ("scope", "mod_scope"),
+    ("mount", "mod_mount"),
+    ("sight_rear", "mod_sight_rear"),
+    ("sight_front", "mod_sight_front"),
+]
+
+EngineBonesNames = [
+    "Bend_Goal_Left", 
+    "Bend_Goal_Right", 
+    "smokeport", 
+    "weapon_L_hand_marker", 
+    "weapon_L_IK_marker", 
+    "weapon_LCollarbone_marker", 
+    "weapon_R_hand_marker", 
+    "weapon_R_IK_marker", 
+    "weapon_RCollarbone_marker", 
+    "weapon_vest_IK_marker", 
+    "shellport", 
+    "Camera_animated", 
+    "Weapon_root", 
+    "Weapon_root_anim", 
+    "aim_camera", 
+    "mod_magazine_new",
+    "fireport",
+    "mod_aim_camera",
+    "mod_align_rear",
+    "mod_align_front"
+]
+
+HumanBonesParents = [
+    'Base HumanLCollarbone', 
+    'Base HumanRCollarbone'
 ]
 
 class OBJECT_OT_LoadMagazines(bpy.types.Operator):
@@ -189,8 +221,7 @@ class OBJECT_OT_CleanLODMeshes(bpy.types.Operator):
                         self.remove(obj)
                     break
 
-        print('Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
-        self.report({'INFO'}, f'Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
+        self.report({'INFO'}, f'LOD: Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
         return {'FINISHED'}
 
 class OBJECT_OT_CleanShadowMeshes(bpy.types.Operator):
@@ -380,8 +411,7 @@ class OBJECT_OT_CleanDoorHandMeshes(bpy.types.Operator):
             if obj.parent is None:
                 continue
 
-        print('Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
-        self.report({'INFO'}, f'Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
+        self.report({'INFO'}, f'Door: Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
         return {'FINISHED'}
 
 class OBJECT_OT_CleanCullingMeshes(bpy.types.Operator):
@@ -443,8 +473,7 @@ class OBJECT_OT_CleanCullingMeshes(bpy.types.Operator):
             if obj.parent is None:
                 continue
 
-        print('Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
-        self.report({'INFO'}, f'Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
+        self.report({'INFO'}, f'Culling: Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
         return {'FINISHED'}
 
 class OBJECT_OT_CleanColliderMeshes(bpy.types.Operator):
@@ -506,16 +535,13 @@ class OBJECT_OT_CleanColliderMeshes(bpy.types.Operator):
             if obj.parent is None:
                 continue
 
-        print('Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
-        self.report({'INFO'}, f'Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
+        self.report({'INFO'}, f'Colliders: Total removed: ' + str(self.removed_count) + ' objects with ' + str(self.removed_child_count) + ' children')
         return {'FINISHED'}
 
 class OBJECT_OT_CleanHumanBones(bpy.types.Operator):
     bl_idname = "object.clean_human_bones"
     bl_label = "Clean Human Bones"
     bl_description = "Removes 'Base HumanLCollarbone' and 'Base HumanRCollarbone' and its children"
-
-    bone_names = ['Base HumanLCollarbone', 'Base HumanRCollarbone']
 
     def execute(self, context):
         armature = context.active_object
@@ -524,15 +550,13 @@ class OBJECT_OT_CleanHumanBones(bpy.types.Operator):
             bpy.context.view_layer.objects.active = armature
             bpy.ops.object.mode_set(mode='EDIT')
 
-            for bone_name in self.bone_names:
+            for bone_name in HumanBonesParents:
                 bone = armature.data.edit_bones.get(bone_name)
 
                 if bone:
                     for child in bone.children_recursive:
                         armature.data.edit_bones.remove(child)
                     armature.data.edit_bones.remove(bone)
-                else:
-                    self.report({'WARNING'}, f"Bone '{bone_name.name}' not found in '{self.armature_name}'.")
 
             bpy.ops.object.mode_set(mode='OBJECT')
             return {'FINISHED'}
@@ -545,27 +569,6 @@ class OBJECT_OT_CleanEngineBones(bpy.types.Operator):
     bl_label = "Clean Weapon Engine Bones"
     bl_description = "Removes engine's weapon pointers in a armature"
 
-    bone_names = [
-        "Bend_Goal_Left", 
-        "Bend_Goal_Right", 
-        "smokeport", 
-        "weapon_L_hand_marker", 
-        "weapon_L_IK_marker", 
-        "weapon_LCollarbone_marker", 
-        "weapon_R_hand_marker", 
-        "weapon_R_IK_marker", 
-        "weapon_RCollarbone_marker", 
-        "weapon_vest_IK_marker", 
-        "shellport", 
-        "Camera_animated", 
-        "Weapon_root", 
-        "Weapon_root_anim", 
-        "aim_camera", 
-        "mod_magazine_new",
-        "fireport",
-        "mod_aim_camera"
-    ]
-
     def execute(self, context):
         armature = context.active_object
 
@@ -573,7 +576,7 @@ class OBJECT_OT_CleanEngineBones(bpy.types.Operator):
             bpy.context.view_layer.objects.active = armature
             bpy.ops.object.mode_set(mode='EDIT')
 
-            for bone_name in self.bone_names:
+            for bone_name in EngineBonesNames:
                 bone = armature.data.edit_bones.get(bone_name)
 
                 if bone:
