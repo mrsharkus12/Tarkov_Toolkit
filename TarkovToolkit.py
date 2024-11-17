@@ -19,6 +19,7 @@ ObjectAndBonePair = [
     ("muzzle", "mod_muzzle"),
     ("gas_block", "mod_gas_block"),
     ("pistolgrip", "mod_pistol_grip"),
+    ("pistolgrip", "mod_pistolgrip"),   # wat the fuck?
     ("charge", "mod_charge"),
     ("stock", "mod_stock"),
     ("stock", "mod_stock_000"),
@@ -26,8 +27,25 @@ ObjectAndBonePair = [
     ("launcher", "mod_launcher"),
     ("scope", "mod_scope"),
     ("mount", "mod_mount"),
+    ("bipod", "mod_bipod"),
+    ("foregrip", "mod_foregrip"),
+    ("tactical", "mod_tactical"),
     ("sight_rear", "mod_sight_rear"),
     ("sight_front", "mod_sight_front"),
+    
+    ("tactical_000", "mod_tactical_000"),
+    ("tactical_001", "mod_tactical_001"),
+    ("tactical_002", "mod_tactical_002"),
+    ("tactical_003", "mod_tactical_003"),
+    ("tactical_004", "mod_tactical_004"),
+    ("tactical_005", "mod_tactical_005"),
+
+    ("mount_000", "mod_mount_000"),
+    ("mount_001", "mod_mount_001"),
+    ("mount_002", "mod_mount_002"),
+    ("mount_003", "mod_mount_003"),
+    ("mount_004", "mod_mount_004"),
+    ("mount_005", "mod_mount_005"),
 ]
 
 EngineBonesNames = [
@@ -55,7 +73,9 @@ EngineBonesNames = [
 
 HumanBonesParents = [
     'Base HumanLCollarbone', 
-    'Base HumanRCollarbone'
+    'Base HumanRCollarbone',
+    'Base HumanLPalm', 
+    'Base HumanLPalm001'
 ]
 
 class OBJECT_OT_LoadMagazines(bpy.types.Operator):
@@ -124,6 +144,9 @@ class CleanLODMaterials(bpy.types.Operator):
     bl_label = "Clean Level Of Detail Materials"
     bl_description = "Removes '_LOD1', '_LOD2' and '_LOD3' materials"
     
+    def __init__(self):
+        self.removed_count = 0
+
     def execute(self, context):
         materials_to_remove = []
         MaterialLODs = ['_LOD1', '_LOD2', '_LOD3']
@@ -136,10 +159,9 @@ class CleanLODMaterials(bpy.types.Operator):
             mat = bpy.data.materials.get(mat_name)
             if mat:
                 bpy.data.materials.remove(mat)
-                self.report({'INFO'}, f"Removed material: {mat_name}")
-            else:
-                self.report({'WARNING'}, f"Couldn't find material: {mat_name}")
+                self.removed_count += 1
 
+        self.report({'INFO'}, f'LOD: Total removed: ' + str(self.removed_count) + ' materials.')
         return {'FINISHED'}
 
 class OBJECT_OT_CleanLODMeshes(bpy.types.Operator):
@@ -543,6 +565,10 @@ class OBJECT_OT_CleanHumanBones(bpy.types.Operator):
     bl_label = "Clean Human Bones"
     bl_description = "Removes 'Base HumanLCollarbone' and 'Base HumanRCollarbone' and its children"
 
+    def __init__(self):
+        self.removed_count = 0
+        self.removed_children_count = 0
+
     def execute(self, context):
         armature = context.active_object
 
@@ -556,9 +582,12 @@ class OBJECT_OT_CleanHumanBones(bpy.types.Operator):
                 if bone:
                     for child in bone.children_recursive:
                         armature.data.edit_bones.remove(child)
+                        self.removed_children_count += 1
                     armature.data.edit_bones.remove(bone)
+                    self.removed_count += 1
 
             bpy.ops.object.mode_set(mode='OBJECT')
+            self.report({'INFO'}, f'Bones: Total removed: ' + str(self.removed_count) + ' bones with ' + str(self.removed_count) + ' children')
             return {'FINISHED'}
         else:
             self.report({'ERROR'}, "No active armature found.")
@@ -569,6 +598,9 @@ class OBJECT_OT_CleanEngineBones(bpy.types.Operator):
     bl_label = "Clean Weapon Engine Bones"
     bl_description = "Removes engine's weapon pointers in a armature"
 
+    def __init__(self):
+        self.removed_count = 0
+
     def execute(self, context):
         armature = context.active_object
 
@@ -578,11 +610,12 @@ class OBJECT_OT_CleanEngineBones(bpy.types.Operator):
 
             for bone_name in EngineBonesNames:
                 bone = armature.data.edit_bones.get(bone_name)
-
                 if bone:
                     armature.data.edit_bones.remove(bone)
+                    self.removed_count += 1
 
             bpy.ops.object.mode_set(mode='OBJECT')
+            self.report({'INFO'}, f'Bones: Total removed: ' + str(self.removed_count) + ' bones')
             return {'FINISHED'}
         else:
             self.report({'ERROR'}, "No active armature found.")
