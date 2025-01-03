@@ -12,7 +12,7 @@ bl_info = {
     "category": "Development",
 }
 
-ObjectAndBonePair = [
+AttachmentToSlot = [
     ("reciever", "mod_reciever"),
     ("handguard", "mod_handguard"),
     ("barrel", "mod_barrel"),
@@ -671,7 +671,7 @@ class OBJECT_OT_AssemblyWeapon(bpy.types.Operator):
         if active_armature and active_armature.type == 'ARMATURE':
             for obj in context.selected_objects:
                 if obj != active_armature:
-                    for object_name, bone_name in ObjectAndBonePair:
+                    for object_name, bone_name in AttachmentToSlot:
                         if object_name in obj.name:
                             self.move_obj_to_bone(obj, active_armature, bone_name)
                             self.parent_keep_transform(obj, active_armature, bone_name)
@@ -681,6 +681,33 @@ class OBJECT_OT_AssemblyWeapon(bpy.types.Operator):
             return {'FINISHED'}
         else:
             self.report({'WARNING'}, "No active armature selected.")
+            return {'CANCELLED'}
+
+class OBJECT_OT_CleanMuzzleFlashBones(bpy.types.Operator):
+    bl_idname = "object.clean_muzzleflash_bones"
+    bl_label = "Remove Muzzleflash Bones"
+    bl_description = "Removes engine's muzzleflash pointers in a armature"
+
+    def __init__(self):
+        self.removed_count = 0
+
+    def execute(self, context):
+        armature = context.active_object
+
+        if armature and armature.type == 'ARMATURE':
+            bpy.context.view_layer.objects.active = armature
+            bpy.ops.object.mode_set(mode='EDIT')
+
+            for bone in armature.data.edit_bones[:]:
+                if bone.name.startswith("muzzleflash_"):
+                    armature.data.edit_bones.remove(bone)
+                    self.removed_count += 1
+
+            bpy.ops.object.mode_set(mode='OBJECT')
+            self.report({'INFO'}, f'Bones: Total removed: ' + str(self.removed_count) + ' bones')
+            return {'FINISHED'}
+        else:
+            self.report({'ERROR'}, "No active armature found.")
             return {'CANCELLED'}
 
 class TarkovTools_Shared(bpy.types.Panel):
@@ -712,6 +739,7 @@ class TarkovTools_Weapon(bpy.types.Panel):
         layout.operator(OBJECT_OT_AssemblyWeapon.bl_idname, icon='LINKED')
         layout.operator(OBJECT_OT_CleanHumanBones.bl_idname, icon='BONE_DATA')
         layout.operator(OBJECT_OT_CleanEngineBones.bl_idname, icon='BONE_DATA')
+        layout.operator(OBJECT_OT_CleanMuzzleFlashBones.bl_idname, icon='BONE_DATA')
 
 class TarkovTools_World(bpy.types.Panel):
     bl_label = "World Scene Tools"
@@ -735,6 +763,7 @@ def register():
     bpy.utils.register_class(OBJECT_OT_AssemblyWeapon)
     bpy.utils.register_class(OBJECT_OT_CleanHumanBones)
     bpy.utils.register_class(OBJECT_OT_CleanEngineBones)
+    bpy.utils.register_class(OBJECT_OT_CleanMuzzleFlashBones)
 
     bpy.utils.register_class(CleanLODMaterials)
     bpy.utils.register_class(OBJECT_OT_CleanLODMeshes)
@@ -753,6 +782,7 @@ def unregister():
     bpy.utils.unregister_class(OBJECT_OT_AssemblyWeapon)
     bpy.utils.unregister_class(OBJECT_OT_CleanHumanBones)
     bpy.utils.unregister_class(OBJECT_OT_CleanEngineBones)
+    bpy.utils.unregister_class(OBJECT_OT_CleanMuzzleFlashBones)
 
     bpy.utils.unregister_class(CleanLODMaterials)
     bpy.utils.unregister_class(OBJECT_OT_CleanLODMeshes)
