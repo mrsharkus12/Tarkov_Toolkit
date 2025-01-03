@@ -75,7 +75,11 @@ HumanBonesParents = [
     'Base HumanLCollarbone', 
     'Base HumanRCollarbone',
     'Base HumanLPalm', 
-    'Base HumanLPalm001'
+    'Base HumanLPalm 1', 
+    'Base HumanLPalm001',
+    'Base HumanRPalm', 
+    'Base HumanRPalm 1', 
+    'Base HumanRPalm001'
 ]
 
 class OBJECT_OT_LoadMagazines(bpy.types.Operator):
