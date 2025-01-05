@@ -68,7 +68,12 @@ EngineBonesNames = [
     "fireport",
     "mod_aim_camera",
     "mod_align_rear",
-    "mod_align_front"
+    "mod_align_front",
+
+    "launcher_0_fireport",
+    "LauncherSight_000",
+    "LauncherSight_001",
+    "launcher_0_aim_camera"
 ]
 
 HumanBonesParents = [
@@ -79,7 +84,18 @@ HumanBonesParents = [
     'Base HumanLPalm001',
     'Base HumanRPalm', 
     'Base HumanRPalm 1', 
-    'Base HumanRPalm001'
+    'Base HumanRPalm001',
+
+    'child',    # this is weird
+
+    'HumanLCollarbone', 
+    'HumanRCollarbone',
+    'HumanLPalm', 
+    'HumanLPalm 1', 
+    'HumanLPalm001',
+    'HumanRPalm', 
+    'HumanRPalm 1', 
+    'HumanRPalm001'
 ]
 
 class OBJECT_OT_LoadMagazines(bpy.types.Operator):
@@ -699,7 +715,7 @@ class OBJECT_OT_CleanMuzzleFlashBones(bpy.types.Operator):
             bpy.ops.object.mode_set(mode='EDIT')
 
             for bone in armature.data.edit_bones[:]:
-                if bone.name.startswith("muzzleflash_"):
+                if bone.name.startswith("muzzleflash"):
                     armature.data.edit_bones.remove(bone)
                     self.removed_count += 1
 
@@ -758,43 +774,33 @@ class TarkovTools_World(bpy.types.Panel):
         layout.operator(OBJECT_OT_CleanColliderMeshes.bl_idname, icon='MESH_ICOSPHERE')
         layout.operator(OBJECT_OT_CleanDoorHandMeshes.bl_idname, icon='HAND')
 
+classes = [
+    OBJECT_OT_LoadMagazines,
+    OBJECT_OT_AssemblyWeapon,
+    OBJECT_OT_CleanHumanBones,
+    OBJECT_OT_CleanEngineBones,
+    OBJECT_OT_CleanMuzzleFlashBones,
+
+    CleanLODMaterials,
+    OBJECT_OT_CleanLODMeshes,
+    OBJECT_OT_CleanShadowMeshes,
+    OBJECT_OT_CleanTriggerMeshes,
+    OBJECT_OT_CleanCullingMeshes,
+    OBJECT_OT_CleanColliderMeshes,
+    OBJECT_OT_CleanDoorHandMeshes,
+
+    TarkovTools_Shared,
+    TarkovTools_Weapon,
+    TarkovTools_World
+]
+
 def register():
-    bpy.utils.register_class(OBJECT_OT_LoadMagazines)
-    bpy.utils.register_class(OBJECT_OT_AssemblyWeapon)
-    bpy.utils.register_class(OBJECT_OT_CleanHumanBones)
-    bpy.utils.register_class(OBJECT_OT_CleanEngineBones)
-    bpy.utils.register_class(OBJECT_OT_CleanMuzzleFlashBones)
-
-    bpy.utils.register_class(CleanLODMaterials)
-    bpy.utils.register_class(OBJECT_OT_CleanLODMeshes)
-    bpy.utils.register_class(OBJECT_OT_CleanShadowMeshes)
-    bpy.utils.register_class(OBJECT_OT_CleanTriggerMeshes)
-    bpy.utils.register_class(OBJECT_OT_CleanCullingMeshes)
-    bpy.utils.register_class(OBJECT_OT_CleanColliderMeshes)
-    bpy.utils.register_class(OBJECT_OT_CleanDoorHandMeshes)
-
-    bpy.utils.register_class(TarkovTools_Shared)
-    bpy.utils.register_class(TarkovTools_Weapon)
-    bpy.utils.register_class(TarkovTools_World)
+    for cls in classes:
+        bpy.utils.register_class(cls)
 
 def unregister():
-    bpy.utils.unregister_class(OBJECT_OT_LoadMagazines)
-    bpy.utils.unregister_class(OBJECT_OT_AssemblyWeapon)
-    bpy.utils.unregister_class(OBJECT_OT_CleanHumanBones)
-    bpy.utils.unregister_class(OBJECT_OT_CleanEngineBones)
-    bpy.utils.unregister_class(OBJECT_OT_CleanMuzzleFlashBones)
-
-    bpy.utils.unregister_class(CleanLODMaterials)
-    bpy.utils.unregister_class(OBJECT_OT_CleanLODMeshes)
-    bpy.utils.unregister_class(OBJECT_OT_CleanShadowMeshes)
-    bpy.utils.unregister_class(OBJECT_OT_CleanTriggerMeshes)
-    bpy.utils.unregister_class(OBJECT_OT_CleanCullingMeshes)
-    bpy.utils.unregister_class(OBJECT_OT_CleanColliderMeshes)
-    bpy.utils.unregister_class(OBJECT_OT_CleanDoorHandMeshes)
-
-    bpy.utils.unregister_class(TarkovTools_Shared)
-    bpy.utils.unregister_class(TarkovTools_Weapon)
-    bpy.utils.unregister_class(TarkovTools_World)
+    for cls in classes:
+        bpy.utils.unregister_class(cls)
 
 if __name__ == "__main__":
     register()
