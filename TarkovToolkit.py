@@ -19,13 +19,13 @@ AttachmentToSlot = [
     ("muzzle", "mod_muzzle"),
     ("gas_block", "mod_gas_block"),
     ("pistolgrip", "mod_pistol_grip"),
-    ("pistolgrip", "mod_pistolgrip"),   # wat the fuck?
+    ("pistolgrip", "mod_pistolgrip"),
+    ("pistolgrip", "mod_pistol_grip_akms"),   # wat the fuck?
     ("charge", "mod_charge"),
-    ("stock", "mod_stock"),
-    ("stock", "mod_stock_000"),
     ("mag", "mod_magazine"),
     ("launcher", "mod_launcher"),
     ("scope", "mod_scope"),
+    ("stock", "mod_stock"),
     ("mount", "mod_mount"),
     ("bipod", "mod_bipod"),
     ("foregrip", "mod_foregrip"),
@@ -33,6 +33,13 @@ AttachmentToSlot = [
     ("sight_rear", "mod_sight_rear"),
     ("sight_front", "mod_sight_front"),
     
+    ("stock_000", "mod_stock_000"),
+    ("stock_001", "mod_stock_001"),
+    ("stock_002", "mod_stock_002"),
+    ("stock_003", "mod_stock_003"),
+    ("stock_004", "mod_stock_004"),
+    ("stock_005", "mod_stock_005"),
+
     ("tactical_000", "mod_tactical_000"),
     ("tactical_001", "mod_tactical_001"),
     ("tactical_002", "mod_tactical_002"),
