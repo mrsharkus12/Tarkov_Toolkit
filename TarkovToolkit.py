@@ -20,7 +20,7 @@ AttachmentToSlot = [
     ("gas_block", "mod_gas_block"),
     ("pistolgrip", "mod_pistol_grip"),
     ("pistolgrip", "mod_pistolgrip"),
-    ("pistolgrip", "mod_pistol_grip_akms"),   # wat the fuck?
+    ("pistolgrip", "mod_pistol_grip_akms"),
     ("charge", "mod_charge"),
     ("mag", "mod_magazine"),
     ("launcher", "mod_launcher"),
@@ -77,6 +77,7 @@ EngineBonesNames = [
     "mod_align_rear",
     "mod_align_front",
 
+    # UBGL
     "launcher_0_fireport",
     "LauncherSight_000",
     "LauncherSight_001",
