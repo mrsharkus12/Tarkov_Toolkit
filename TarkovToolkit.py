@@ -6,7 +6,7 @@ bl_info = {
     "name": "Tarkov Toolkit",
     "version": (1, 0, 1),
     "author": "mrsharkus12",
-    "blender": (2, 93, 0),
+    "blender": (4, 0, 0),
     "location": "3D Viewport > Sidebar > Tarkov Toolkit",
     "description": "A toolkit pack for a more comfortable Tarkov asset management.",
     "category": "Development",
