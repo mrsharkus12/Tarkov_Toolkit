@@ -171,8 +171,7 @@ class CleanLODMaterials(bpy.types.Operator):
     bl_label = "Clean Level Of Detail Materials"
     bl_description = "Removes '_LOD1', '_LOD2' and '_LOD3' materials"
     
-    def __init__(self):
-        self.removed_count = 0
+    removed_count: bpy.props.IntProperty(default=0)
 
     def execute(self, context):
         materials_to_remove = []
@@ -181,6 +180,8 @@ class CleanLODMaterials(bpy.types.Operator):
         for mat in bpy.data.materials:
             if any(mat.name.endswith(lod) for lod in MaterialLODs):
                 materials_to_remove.append(mat.name)
+
+        self.removed_count = 0
 
         for mat_name in materials_to_remove:
             mat = bpy.data.materials.get(mat_name)
@@ -199,10 +200,8 @@ class OBJECT_OT_CleanLODMeshes(bpy.types.Operator):
     regex_list_lod = [".*lod(_)?[1-4].*", ".*_lod($|\.)"]
     regex_list = []
 
-    def __init__(self):
-        self.removed_count = 0
-        self.removed_child_count = 0
-        self.avg_time = []
+    removed_count: bpy.props.IntProperty(default=0)
+    removed_child_count: bpy.props.IntProperty(default=0)
 
     def remove_children(self, obj):
         child_count = 0
@@ -239,6 +238,10 @@ class OBJECT_OT_CleanLODMeshes(bpy.types.Operator):
             bpy.context.view_layer.update()
 
     def execute(self, context):
+        self.removed_count = 0
+        self.removed_child_count = 0
+        self.avg_time = []
+
         print('Checking ' + str(len(bpy.context.scene.objects)) + ' objects')
 
         # Loop through all objects in the scene
@@ -280,10 +283,8 @@ class OBJECT_OT_CleanShadowMeshes(bpy.types.Operator):
 
     regex_list = [".*SHADOW.*", ".*Sten(s|c)il.*"]
 
-    def __init__(self):
-        self.removed_count = 0
-        self.removed_child_count = 0
-        self.avg_time = []
+    removed_count: bpy.props.IntProperty(default=0)
+    removed_child_count: bpy.props.IntProperty(default=0)
 
     def remove_children(self, obj):
         child_count = 0
@@ -320,6 +321,10 @@ class OBJECT_OT_CleanShadowMeshes(bpy.types.Operator):
             bpy.context.view_layer.update()
 
     def execute(self, context):
+        self.removed_count = 0
+        self.removed_child_count = 0
+        self.avg_time = []
+
         print('Checking ' + str(len(bpy.context.scene.objects)) + ' objects')
 
         # Loop through all objects in the scene
@@ -345,10 +350,8 @@ class OBJECT_OT_CleanTriggerMeshes(bpy.types.Operator):
 
     regex_list = [".*BLOCKER.*", "^Cube.*"]
 
-    def __init__(self):
-        self.removed_count = 0
-        self.removed_child_count = 0
-        self.avg_time = []
+    removed_count: bpy.props.IntProperty(default=0)
+    removed_child_count: bpy.props.IntProperty(default=0)
 
     def remove_children(self, obj):
         child_count = 0
@@ -384,6 +387,10 @@ class OBJECT_OT_CleanTriggerMeshes(bpy.types.Operator):
             bpy.context.view_layer.update()
 
     def execute(self, context):
+        self.removed_count = 0
+        self.removed_child_count = 0
+        self.avg_time = []
+
         print('Checking ' + str(len(bpy.context.scene.objects)) + ' objects')
 
         for obj in bpy.context.scene.objects:
@@ -408,10 +415,8 @@ class OBJECT_OT_CleanDoorHandMeshes(bpy.types.Operator):
 
     regex_list = ["^Pull\w*", "^Push\w*", ".*KeyGrip.*", ".*sg_pivot.*", ".*sg_targets.*", ".*test_hand.*", ".*HumanLPalm.*", ".*HumanRPalm.*"]
 
-    def __init__(self):
-        self.removed_count = 0
-        self.removed_child_count = 0
-        self.avg_time = []
+    removed_count: bpy.props.IntProperty(default=0)
+    removed_child_count: bpy.props.IntProperty(default=0)
 
     def remove_children(self, obj):
         child_count = 0
@@ -447,6 +452,10 @@ class OBJECT_OT_CleanDoorHandMeshes(bpy.types.Operator):
             bpy.context.view_layer.update()
 
     def execute(self, context):
+        self.removed_count = 0
+        self.removed_child_count = 0
+        self.avg_time = []
+
         print('Checking ' + str(len(bpy.context.scene.objects)) + ' objects')
 
         for obj in bpy.context.scene.objects:
@@ -470,10 +479,8 @@ class OBJECT_OT_CleanCullingMeshes(bpy.types.Operator):
 
     regex_list = [".*culling.*"]
 
-    def __init__(self):
-        self.removed_count = 0
-        self.removed_child_count = 0
-        self.avg_time = []
+    removed_count: bpy.props.IntProperty(default=0)
+    removed_child_count: bpy.props.IntProperty(default=0)
 
     def remove_children(self, obj):
         child_count = 0
@@ -509,6 +516,10 @@ class OBJECT_OT_CleanCullingMeshes(bpy.types.Operator):
             bpy.context.view_layer.update()
 
     def execute(self, context):
+        self.removed_count = 0
+        self.removed_child_count = 0
+        self.avg_time = []
+
         print('Checking ' + str(len(bpy.context.scene.objects)) + ' objects')
 
         for obj in bpy.context.scene.objects:
@@ -532,10 +543,8 @@ class OBJECT_OT_CleanColliderMeshes(bpy.types.Operator):
 
     regex_list = [".*BAL(L)?ISTIC.*", ".*COL(L)?IDER.*", ".*COL(L)?ISION.*", ".*LowPen.*", ".*HighPen.*"]
 
-    def __init__(self):
-        self.removed_count = 0
-        self.removed_child_count = 0
-        self.avg_time = []
+    removed_count: bpy.props.IntProperty(default=0)
+    removed_child_count: bpy.props.IntProperty(default=0)
 
     def remove_children(self, obj):
         child_count = 0
@@ -571,6 +580,10 @@ class OBJECT_OT_CleanColliderMeshes(bpy.types.Operator):
             bpy.context.view_layer.update()
 
     def execute(self, context):
+        self.removed_count = 0
+        self.removed_child_count = 0
+        self.avg_time = []
+
         print('Checking ' + str(len(bpy.context.scene.objects)) + ' objects')
 
         for obj in bpy.context.scene.objects:
@@ -592,11 +605,13 @@ class OBJECT_OT_CleanHumanBones(bpy.types.Operator):
     bl_label = "Clean Human Bones"
     bl_description = "Removes 'Base HumanLCollarbone' and 'Base HumanRCollarbone' and its children"
 
-    def __init__(self):
-        self.removed_count = 0
-        self.removed_children_count = 0
+    removed_count: bpy.props.IntProperty(default=0)
+    removed_child_count: bpy.props.IntProperty(default=0)
 
     def execute(self, context):
+        self.removed_count = 0
+        self.removed_child_count = 0
+
         armature = context.active_object
 
         if armature and armature.type == 'ARMATURE':
@@ -609,12 +624,12 @@ class OBJECT_OT_CleanHumanBones(bpy.types.Operator):
                 if bone:
                     for child in bone.children_recursive:
                         armature.data.edit_bones.remove(child)
-                        self.removed_children_count += 1
+                        self.removed_child_count += 1
                     armature.data.edit_bones.remove(bone)
                     self.removed_count += 1
 
             bpy.ops.object.mode_set(mode='OBJECT')
-            self.report({'INFO'}, f'Bones: Total removed: ' + str(self.removed_count) + ' bones with ' + str(self.removed_count) + ' children')
+            self.report({'INFO'}, f'Bones: Total removed: ' + str(self.removed_count) + ' bones with ' + str(self.removed_child_count) + ' children')
             return {'FINISHED'}
         else:
             self.report({'ERROR'}, "No active armature found.")
@@ -625,10 +640,11 @@ class OBJECT_OT_CleanEngineBones(bpy.types.Operator):
     bl_label = "Clean Weapon Engine Bones"
     bl_description = "Removes engine's weapon pointers in a armature"
 
-    def __init__(self):
-        self.removed_count = 0
+    removed_count: bpy.props.IntProperty(default=0)
 
     def execute(self, context):
+        self.removed_count = 0
+
         armature = context.active_object
 
         if armature and armature.type == 'ARMATURE':
@@ -711,10 +727,11 @@ class OBJECT_OT_CleanMuzzleFlashBones(bpy.types.Operator):
     bl_label = "Remove Muzzleflash Bones"
     bl_description = "Removes engine's muzzleflash pointers in a armature"
 
-    def __init__(self):
+    removed_count: bpy.props.IntProperty(default=0)
+    
+    def execute(self, context):
         self.removed_count = 0
 
-    def execute(self, context):
         armature = context.active_object
 
         if armature and armature.type == 'ARMATURE':
@@ -732,6 +749,7 @@ class OBJECT_OT_CleanMuzzleFlashBones(bpy.types.Operator):
         else:
             self.report({'ERROR'}, "No active armature found.")
             return {'CANCELLED'}
+
 
 class TarkovTools_Shared(bpy.types.Panel):
     bl_label = "Shared Tools"
